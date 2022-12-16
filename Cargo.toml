@@ -16,6 +16,7 @@ regex = "1.7.0"
 tpe = "0.2.0"
 rand = "0.8.5"
 anyhow = "1.0.66"
+csv = "1.1.6"
 
 [features]
 default = ["rayon"]
