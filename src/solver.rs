@@ -4,6 +4,7 @@ use crate::sliceop::*;
 use crate::utility::*;
 use std::io::{self, Write};
 use std::mem::MaybeUninit;
+use rand::Rng;
 
 #[cfg(feature = "custom-alloc")]
 use crate::alloc::*;
@@ -404,12 +405,21 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
     for i in 0..row_size {
         let mut max = 0.0;
         let mut max_index = 0;
+        let mut num_same_max = 0;
         for j in 0..num_actions {
             let v = strategy[i + j * row_size];
             if v > max {
                 max = v;
                 max_index = j;
             }
+            if v == max {
+                num_same_max += 1;
+            }
+        }
+        if num_same_max == num_actions {
+            //chose random action if all actions have the same value
+            let mut rng = rand::thread_rng();
+            max_index = rng.gen_range(0..num_actions);
         }
         for j in 0..num_actions {
             strategy[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };
