@@ -400,6 +400,23 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
         div_slice(row, &denom, default);
     });
 
+    // set the strategy to be pure strategy
+    for i in 0..row_size {
+        let mut max = 0.0;
+        let mut max_index = 0;
+        for j in 0..num_actions {
+            let v = strategy[i + j * row_size];
+            if v > max {
+                max = v;
+                max_index = j;
+            }
+        }
+        for j in 0..num_actions {
+            strategy[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };
+        }
+
+    }
+
     strategy
 }
 
