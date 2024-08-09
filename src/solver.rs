@@ -4,6 +4,7 @@ use crate::sliceop::*;
 use crate::utility::*;
 use std::io::{self, Write};
 use std::mem::MaybeUninit;
+use std::thread::current;
 
 #[cfg(feature = "custom-alloc")]
 use crate::alloc::*;
@@ -17,18 +18,18 @@ struct DiscountParams {
 impl DiscountParams {
     pub fn new(current_iteration: u32) -> Self {
         // 0, 1, 4, 16, 64, 256, ...
-        let nearest_lower_power_of_4 = match current_iteration {
-            0 => 0,
-            x => 1 << ((x.leading_zeros() ^ 31) & !1),
-        };
+        // let nearest_lower_power_of_4 = match current_iteration {
+        //     0 => 0,
+        //     x => 1 << ((x.leading_zeros() ^ 31) & !1),
+        // };
 
         let t_alpha = (current_iteration as i32 - 1).max(0) as f64;
-        let t_gamma = (current_iteration - nearest_lower_power_of_4) as f64;
+        //let t_gamma = (current_iteration - nearest_lower_power_of_4) as f64;
 
         let pow_alpha = t_alpha * t_alpha.sqrt();
         //let pow_gamma = (t_gamma / (t_gamma + 1.0)).powi(3);
         let mut pow_gamma = 1.0;
-        if current_iteration == 20 || current_iteration == 500 || current_iteration == 100{
+        if current_iteration.is_power_of_two() {
             pow_gamma = 0.0;
         }
 
@@ -383,7 +384,6 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32, StackAlloc> {
         div_slice(row, &denom, default);
     });
 
-    let mut rng = rand::thread_rng();
     for i in 0..row_size {
         let mut max = 0.0;
         let mut max_index = 0;
@@ -458,6 +458,57 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
         }
 
     }
+
+    strategy
+}
+
+
+#[cfg(feature = "custom-alloc")]
+#[inline]
+fn regret_matching_opp(regret: &[f32], num_actions: usize) -> Vec<f32, StackAlloc> {
+    use core::num;
+
+    let mut strategy = Vec::with_capacity_in(regret.len(), StackAlloc);
+    let uninit = strategy.spare_capacity_mut();
+    uninit.iter_mut().zip(regret).for_each(|(s, r)| {
+        s.write(max(*r, 0.0));
+    });
+    unsafe { strategy.set_len(regret.len()) };
+
+    let row_size = regret.len() / num_actions;
+    let mut denom = Vec::with_capacity_in(row_size, StackAlloc);
+    sum_slices_uninit(denom.spare_capacity_mut(), &strategy);
+    unsafe { denom.set_len(row_size) };
+
+    let default = 1.0 / num_actions as f32;
+    strategy.chunks_exact_mut(row_size).for_each(|row| {
+        div_slice(row, &denom, default);
+    });
+
+
+    strategy
+}
+
+/// Computes the strategy by regret-matching algorithm.
+#[cfg(not(feature = "custom-alloc"))]
+#[inline]
+fn regret_matching_opp(regret: &[f32], num_actions: usize) -> Vec<f32> {
+    let mut strategy = Vec::with_capacity(regret.len());
+    let uninit = strategy.spare_capacity_mut();
+    uninit.iter_mut().zip(regret).for_each(|(s, r)| {
+        s.write(max(*r, 0.0));
+    });
+    unsafe { strategy.set_len(regret.len()) };
+
+    let row_size = regret.len() / num_actions;
+    let mut denom = Vec::with_capacity(row_size);
+    sum_slices_uninit(denom.spare_capacity_mut(), &strategy);
+    unsafe { denom.set_len(row_size) };
+
+    let default = 1.0 / num_actions as f32;
+    strategy.chunks_exact_mut(row_size).for_each(|row| {
+        div_slice(row, &denom, default);
+    });
 
     strategy
 }
