@@ -63,7 +63,7 @@ mod action_tree;
 mod atomic_float;
 mod bet_size;
 mod bunching;
-mod card;
+pub mod card;
 mod game;
 mod hand;
 mod hand_table;

@@ -4,6 +4,7 @@ use crate::sliceop::*;
 use crate::utility::*;
 use std::io::{self, Write};
 use std::mem::MaybeUninit;
+use std::thread::current;
 use rand::Rng;
 
 #[cfg(feature = "custom-alloc")]
@@ -27,7 +28,11 @@ impl DiscountParams {
         let t_gamma = (current_iteration - nearest_lower_power_of_4) as f64;
 
         let pow_alpha = t_alpha * t_alpha.sqrt();
-        let pow_gamma = (t_gamma / (t_gamma + 1.0)).powi(3);
+        //let pow_gamma = (t_gamma / (t_gamma + 1.0)).powi(3);
+        let mut pow_gamma = 1.0;
+        if current_iteration == 20 || current_iteration == 500 || current_iteration == 100{
+            pow_gamma = 0.0;
+        }
 
         Self {
             alpha_t: (pow_alpha / (pow_alpha + 1.0)) as f32,
@@ -304,6 +309,7 @@ fn solve_recursive<T: Game>(
             let cum_strategy = node.strategy_mut();
             cum_strategy.iter_mut().zip(&strategy).for_each(|(x, y)| {
                 *x = *x * gamma + *y;
+                
             });
 
             // update the cumulative regret
@@ -377,6 +383,32 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32, StackAlloc> {
         div_slice(row, &denom, default);
     });
 
+    let mut rng = rand::thread_rng();
+    for i in 0..row_size {
+        let mut max = 0.0;
+        let mut max_index = 0;
+        let mut num_same_max = 0;
+        for j in 0..num_actions {
+            let v = strategy[i + j * row_size];
+            if v > max {
+                max = v;
+                max_index = j;
+            }
+            if v == max {
+                num_same_max += 1;
+            }
+        }
+        if num_same_max == num_actions {
+            //chose random action if all actions have the same value
+            
+            max_index = rng.gen_range(0..num_actions);
+        }
+        for j in 0..num_actions {
+            strategy[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };
+        }
+
+    }
+
     strategy
 }
 
@@ -402,6 +434,7 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
     });
 
     // set the strategy to be pure strategy
+    let mut rng = rand::thread_rng();
     for i in 0..row_size {
         let mut max = 0.0;
         let mut max_index = 0;
@@ -418,7 +451,7 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
         }
         if num_same_max == num_actions {
             //chose random action if all actions have the same value
-            let mut rng = rand::thread_rng();
+            
             max_index = rng.gen_range(0..num_actions);
         }
         for j in 0..num_actions {
