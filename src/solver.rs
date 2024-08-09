@@ -4,8 +4,6 @@ use crate::sliceop::*;
 use crate::utility::*;
 use std::io::{self, Write};
 use std::mem::MaybeUninit;
-use std::thread::current;
-use rand::Rng;
 
 #[cfg(feature = "custom-alloc")]
 use crate::alloc::*;
@@ -366,6 +364,8 @@ fn solve_recursive<T: Game>(
 #[cfg(feature = "custom-alloc")]
 #[inline]
 fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32, StackAlloc> {
+    use core::num;
+
     let mut strategy = Vec::with_capacity_in(regret.len(), StackAlloc);
     let uninit = strategy.spare_capacity_mut();
     uninit.iter_mut().zip(regret).for_each(|(s, r)| {
@@ -401,7 +401,7 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32, StackAlloc> {
         if num_same_max == num_actions {
             //chose random action if all actions have the same value
             
-            max_index = rng.gen_range(0..num_actions);
+            max_index = num_actions -1;
         }
         for j in 0..num_actions {
             strategy[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };
@@ -434,7 +434,6 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
     });
 
     // set the strategy to be pure strategy
-    let mut rng = rand::thread_rng();
     for i in 0..row_size {
         let mut max = 0.0;
         let mut max_index = 0;
@@ -452,7 +451,7 @@ fn regret_matching(regret: &[f32], num_actions: usize) -> Vec<f32> {
         if num_same_max == num_actions {
             //chose random action if all actions have the same value
             
-            max_index = rng.gen_range(0..num_actions);
+            max_index = num_actions-1;
         }
         for j in 0..num_actions {
             strategy[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };

@@ -1,0 +1,213 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'postflop_solver'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "postflop_solver",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'basic'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=basic",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "basic",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'basic'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=basic",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "basic",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'file_io'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=file_io",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "file_io",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'file_io'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=file_io",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "file_io",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'node_locking'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=node_locking",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "node_locking",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'node_locking'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=node_locking",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "node_locking",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'pio_3betpotfast'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=pio_3betpotfast",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "pio_3betpotfast",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'pio_3betpotfast'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=pio_3betpotfast",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "pio_3betpotfast",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'kuhn'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=kuhn",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "kuhn",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'leduc'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=leduc",
+                    "--package=postflop-solver"
+                ],
+                "filter": {
+                    "name": "leduc",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

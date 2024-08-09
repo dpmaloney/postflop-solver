@@ -742,6 +742,31 @@ pub(crate) fn normalized_strategy_custom_alloc(
         });
 
     unsafe { normalized.set_len(strategy.len()) };
+
+    for i in 0..row_size {
+        let mut max = 0.0;
+        let mut max_index = 0;
+        let mut num_same_max = 0;
+        for j in 0..num_actions {
+            let v = normalized[i + j * row_size];
+            if v > max {
+                max = v;
+                max_index = j;
+            }
+            if v == max {
+                num_same_max += 1;
+            }
+        }
+        if num_same_max == num_actions {
+            //chose random action if all actions have the same value
+            
+            max_index = num_actions-1;
+        }
+        for j in 0..num_actions {
+            normalized[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };
+        }
+
+    }
     normalized
 }
 
@@ -764,6 +789,32 @@ pub(crate) fn normalized_strategy(strategy: &[f32], num_actions: usize) -> Vec<f
         });
 
     unsafe { normalized.set_len(strategy.len()) };
+
+    for i in 0..row_size {
+        let mut max = 0.0;
+        let mut max_index = 0;
+        let mut num_same_max = 0;
+        for j in 0..num_actions {
+            let v = normalized[i + j * row_size];
+            if v > max {
+                max = v;
+                max_index = j;
+            }
+            if v == max {
+                num_same_max += 1;
+            }
+        }
+        if num_same_max == num_actions {
+            //chose random action if all actions have the same value
+            
+            max_index = num_actions-1;
+        }
+        for j in 0..num_actions {
+            normalized[i + j * row_size] = if j == max_index { 1.0 } else { 0.0 };
+        }
+
+    }
+
     normalized
 }
 
